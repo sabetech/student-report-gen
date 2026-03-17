@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
@@ -31,7 +31,7 @@ app.post('/api/login', async (req, res) => {
 
     try {
         const [rows] = await pool.query('SELECT * FROM staff WHERE email = ?', [email]);
-        
+
         if (rows.length === 0) {
             return res.status(401).json({ status: 'Error', message: 'Invalid email or password' });
         }
