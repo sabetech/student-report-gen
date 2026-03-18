@@ -10,6 +10,8 @@ const Sidebar = () => {
         { name: 'Settings', path: '/settings', icon: SettingsIcon },
     ];
 
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
     const handleLogout = () => {
         localStorage.removeItem('user');
         window.location.href = '/login';
@@ -45,8 +47,19 @@ const Sidebar = () => {
                 ))}
             </nav>
 
-            {/* Footer Section (Logout) */}
-            <div className="p-4 border-t border-slate-700">
+            {/* Footer Section (User & Logout) */}
+            <div className="p-4 border-t border-slate-700 bg-slate-800/50">
+                {user.email && (
+                    <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-slate-900/50 rounded-lg border border-slate-700/50 group transition-all hover:border-slate-600">
+                        <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-600/30 flex items-center justify-center text-blue-400 font-bold text-xs shrink-0">
+                            {user.email.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-xs font-semibold text-white truncate">{user.name || 'User'}</span>
+                            <span className="text-[10px] text-slate-500 truncate">{user.email}</span>
+                        </div>
+                    </div>
+                )}
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all group"

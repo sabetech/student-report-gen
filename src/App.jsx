@@ -18,6 +18,7 @@ function App() {
         <Route element={<AuthenticatedLayout />}>
           <Route path="/exam-configs" element={<ExamConfigs />} />
           <Route path="/exam-configs/new" element={<ExamConfigEditor />} />
+          <Route path="/exam-configs/edit/:id" element={<ExamConfigEditor />} />
           <Route path="/subjects" element={<SubjectManagement />} />
           <Route path="/upload" element={<UploadData />} />
           <Route path="/settings" element={<Settings />} />
