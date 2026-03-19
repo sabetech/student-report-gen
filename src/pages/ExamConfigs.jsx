@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    Plus, 
-    Search, 
-    ChevronDown, 
-    Table, 
-    FunctionSquare, 
-    History, 
-    Languages, 
-    Globe, 
-    Eye, 
-    Edit, 
+import {
+    Plus,
+    Search,
+    ChevronDown,
+    Table,
+    FunctionSquare,
+    History,
+    Languages,
+    Globe,
+    Eye,
+    Edit,
     Trash2,
     ChevronLeft,
     ChevronRight
@@ -26,7 +26,7 @@ const ExamConfigs = () => {
         const fetchConfigs = async () => {
             setIsLoading(true);
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const response = await fetch(`${apiUrl}/exam-configurations`);
                 const data = await response.json();
                 if (data.status === 'OK') {
@@ -39,7 +39,7 @@ const ExamConfigs = () => {
                         status: 'Active',
                         statusColor: 'bg-green-500/20 text-green-400 ring-green-600/20',
                         modified: new Date(c.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                        version: 'v1.0',
+                        version: `v${c.version}.0`,
                         icon: Table,
                         image: `https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=400&h=200&sig=${c.id}`
                     }));
@@ -54,7 +54,7 @@ const ExamConfigs = () => {
         fetchConfigs();
     }, []);
 
-    const filteredConfigs = configs.filter(c => 
+    const filteredConfigs = configs.filter(c =>
         c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.class_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -71,7 +71,7 @@ const ExamConfigs = () => {
                         Manage your Excel-to-Report templates and schedules.
                     </p>
                 </div>
-                <button 
+                <button
                     onClick={() => navigate('/exam-configs/new')}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95"
                 >
@@ -117,14 +117,14 @@ const ExamConfigs = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredConfigs.map((config) => (
-                        <div 
+                        <div
                             key={config.id}
                             className="group flex flex-col bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-1 transition-all duration-300"
                         >
                             {/* Image Header */}
                             <div className="h-44 w-full relative overflow-hidden">
-                                <img 
-                                    src={config.image} 
+                                <img
+                                    src={config.image}
                                     alt={config.name}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
@@ -142,11 +142,11 @@ const ExamConfigs = () => {
                                     <config.icon className="w-4 h-4 text-blue-500" />
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{config.dept}</span>
                                 </div>
-                                
+
                                 <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-blue-400 transition-colors">
                                     {config.name}
                                 </h3>
-                                
+
                                 <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2">
                                     {config.description}
                                 </p>
@@ -157,14 +157,14 @@ const ExamConfigs = () => {
                                 </div>
 
                                 <div className="flex gap-2">
-                                    <button 
+                                    <button
                                         onClick={() => navigate(`/exam-configs/edit/${config.id}`)}
                                         className="flex-1 px-4 py-2 bg-slate-700/50 hover:bg-blue-600 text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 active:scale-95"
                                     >
                                         <Eye className="w-4 h-4" />
                                         <span>View</span>
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => navigate(`/exam-configs/edit/${config.id}`)}
                                         className="p-2 bg-slate-700/50 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg transition-all active:scale-90" title="Edit"
                                     >
@@ -179,7 +179,7 @@ const ExamConfigs = () => {
                     ))}
 
                     {/* Create New Card */}
-                    <button 
+                    <button
                         onClick={() => navigate('/exam-configs/new')}
                         className="group flex flex-col items-center justify-center bg-slate-800/20 border-2 border-dashed border-slate-700 hover:border-blue-500/50 hover:bg-blue-500/5 rounded-2xl transition-all duration-300 p-8 min-h-[400px]"
                     >

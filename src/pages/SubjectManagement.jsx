@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    BookOpen, 
-    Search, 
-    Plus, 
-    Trash2, 
-    ChevronRight, 
+import {
+    BookOpen,
+    Search,
+    Plus,
+    Trash2,
+    ChevronRight,
     Info,
     GraduationCap,
     Layout
@@ -24,7 +24,7 @@ const SubjectManagement = () => {
     useEffect(() => {
         const fetchConfigs = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const response = await fetch(`${apiUrl}/exam-configurations`);
                 const data = await response.json();
                 if (data.status === 'OK') {
@@ -47,7 +47,7 @@ const SubjectManagement = () => {
         const fetchAssigned = async () => {
             setIsLoading(true);
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const response = await fetch(`${apiUrl}/exam-config-subjects/${selectedConfig}`);
                 const data = await response.json();
                 if (data.status === 'OK') {
@@ -72,7 +72,7 @@ const SubjectManagement = () => {
         const timer = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const response = await fetch(`${apiUrl}/subjects?search=${encodeURIComponent(searchQuery)}`);
                 const data = await response.json();
                 if (data.status === 'OK') {
@@ -90,12 +90,12 @@ const SubjectManagement = () => {
 
     const handleAssign = async (subject) => {
         if (!selectedConfig) return;
-        
+
         // Prevent duplicate assignment in UI
         if (assignedSubjects.some(s => s.id === subject.id)) return;
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL;
+            const apiUrl = import.meta.env.VITE_API_TARGET;
             const response = await fetch(`${apiUrl}/exam-config-subjects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -114,7 +114,7 @@ const SubjectManagement = () => {
 
     const handleUnassign = async (subjectId) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL;
+            const apiUrl = import.meta.env.VITE_API_TARGET;
             const response = await fetch(`${apiUrl}/exam-config-subjects/${selectedConfig}/${subjectId}`, {
                 method: 'DELETE'
             });
@@ -154,7 +154,7 @@ const SubjectManagement = () => {
                                     Exam Configuration
                                 </label>
                                 <div className="relative">
-                                    <select 
+                                    <select
                                         value={selectedConfig}
                                         onChange={(e) => setSelectedConfig(e.target.value)}
                                         className="w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 h-12 text-white text-sm font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
@@ -162,7 +162,7 @@ const SubjectManagement = () => {
                                         <option value="">Select a configuration</option>
                                         {configs.map(c => (
                                             <option key={c.id} value={c.id}>
-                                                {c.class_name} Configuration
+                                                {c.class_name} Configuration (v{c.version})
                                             </option>
                                         ))}
                                     </select>
@@ -182,7 +182,7 @@ const SubjectManagement = () => {
                                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
                                         <Search className="w-4 h-4" />
                                     </div>
-                                    <input 
+                                    <input
                                         type="text"
                                         placeholder="Type subject name or code..."
                                         value={searchQuery}
@@ -190,7 +190,7 @@ const SubjectManagement = () => {
                                         disabled={!selectedConfig}
                                         className="w-full bg-slate-900 border border-slate-700/50 rounded-xl pl-11 pr-4 h-12 text-white text-sm font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     />
-                                    
+
                                     {/* Search Results Dropdown */}
                                     {searchQuery.trim() && subjects.length > 0 && (
                                         <div className="absolute top-full left-0 w-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-50">
@@ -279,7 +279,7 @@ const SubjectManagement = () => {
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleUnassign(subject.id)}
                                                             className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                                                             title="Unassign Subject"

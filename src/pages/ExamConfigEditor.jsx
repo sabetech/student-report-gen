@@ -26,8 +26,9 @@ const ExamConfigEditor = () => {
     const handleSave = async () => {
         setIsSaving(true);
         setSaveStatus({ type: '', message: '' });
-        
+
         const payload = {
+            id: id, // if defined, it's an update to the specific version
             class_id: selectedClass,
             weights: weights.map(w => ({ name: w.name, value: w.value })),
             remarks: remarks.map(r => ({ grade: r.grade, text: r.text })),
@@ -35,7 +36,7 @@ const ExamConfigEditor = () => {
         };
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL;
+            const apiUrl = import.meta.env.VITE_API_TARGET;
             const response = await fetch(`${apiUrl}/exam-configurations`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -68,8 +69,8 @@ const ExamConfigEditor = () => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
-                
+                const apiUrl = import.meta.env.VITE_API_TARGET;
+
                 // Fetch classes
                 const classesRes = await fetch(`${apiUrl}/classes`);
                 const classesData = await classesRes.json();
@@ -84,16 +85,16 @@ const ExamConfigEditor = () => {
                     if (configData.status === 'OK') {
                         const config = configData.configuration;
                         setSelectedClass(config.class_id);
-                        
+
                         // Map weights
                         if (config.assessment_weights?.length > 0) {
-                            setWeights(config.assessment_weights.map((w, idx) => ({ 
-                                id: idx + 1, 
-                                name: w.name, 
-                                value: w.value 
+                            setWeights(config.assessment_weights.map((w, idx) => ({
+                                id: idx + 1,
+                                name: w.name,
+                                value: w.value
                             })));
                         }
-                        
+
                         // Map remarks
                         if (config.grade_remarks?.length > 0) {
                             setRemarks(config.grade_remarks.map((r, idx) => ({
@@ -102,7 +103,7 @@ const ExamConfigEditor = () => {
                                 text: r.text
                             })));
                         }
-                        
+
                         // Map scale
                         if (config.grading_scales?.length > 0) {
                             setGradingScale(config.grading_scales.map((s, idx) => ({
@@ -151,7 +152,7 @@ const ExamConfigEditor = () => {
     ]);
 
     const updateGradingScale = (id, field, value) => {
-        setGradingScale(gradingScale.map(s => 
+        setGradingScale(gradingScale.map(s =>
             s.id === id ? { ...s, [field]: Number(value) } : s
         ));
     };
@@ -159,7 +160,7 @@ const ExamConfigEditor = () => {
     const totalWeight = weights.reduce((sum, w) => sum + Number(w.value), 0);
 
     const updateWeight = (id, field, value) => {
-        setWeights(weights.map(w => 
+        setWeights(weights.map(w =>
             w.id === id ? { ...w, [field]: field === 'value' ? Math.max(0, Number(value)) : value } : w
         ));
     };
@@ -209,7 +210,7 @@ const ExamConfigEditor = () => {
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         onClick={handleSave}
                         disabled={isSaving || totalWeight !== 100 || !selectedClass || remarks.some(r => !r.text.trim())}
                         className={`flex items-center gap-2 justify-center rounded-lg h-10 px-6 bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -226,11 +227,10 @@ const ExamConfigEditor = () => {
 
             {/* Status Message */}
             {saveStatus.message && (
-                <div className={`p-4 rounded-xl flex items-center gap-3 border ${
-                    saveStatus.type === 'success' 
-                        ? 'bg-green-500/10 border-green-500/20 text-green-400' 
-                        : 'bg-red-500/10 border-red-500/20 text-red-400'
-                }`}>
+                <div className={`p-4 rounded-xl flex items-center gap-3 border ${saveStatus.type === 'success'
+                    ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                    : 'bg-red-500/10 border-red-500/20 text-red-400'
+                    }`}>
                     {saveStatus.type === 'success' ? (
                         <CheckCircle className="w-5 h-5" />
                     ) : (
@@ -305,8 +305,8 @@ const ExamConfigEditor = () => {
                             {weights.map((w) => (
                                 <div key={w.id} className="group flex items-center gap-4 p-4 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-blue-500/30 transition-all duration-300">
                                     <div className="flex-1">
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             value={w.name}
                                             onChange={(e) => updateWeight(w.id, 'name', e.target.value)}
                                             className="w-full bg-transparent border-none text-white font-bold p-0 focus:ring-0 placeholder-slate-600 text-sm"
@@ -315,15 +315,15 @@ const ExamConfigEditor = () => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <div className="relative w-24">
-                                            <input 
-                                                type="number" 
+                                            <input
+                                                type="number"
                                                 value={w.value}
                                                 onChange={(e) => updateWeight(w.id, 'value', e.target.value)}
                                                 className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-3 pr-8 py-2 text-right font-mono text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                             />
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">%</span>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => removeWeight(w.id)}
                                             className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                                         >
@@ -334,7 +334,7 @@ const ExamConfigEditor = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             onClick={addWeight}
                             className="mt-6 w-full flex items-center justify-center gap-2 h-12 rounded-xl border-2 border-dashed border-slate-700 text-slate-400 hover:text-blue-400 hover:border-blue-500/50 hover:bg-blue-500/5 font-bold text-sm transition-all duration-300"
                         >
@@ -366,7 +366,7 @@ const ExamConfigEditor = () => {
                                     </div>
                                     <div className="flex-1 flex flex-col gap-1.5">
                                         <label className="text-[10px] uppercase font-black tracking-widest text-slate-500">Remark Text</label>
-                                        <textarea 
+                                        <textarea
                                             value={r.text}
                                             onChange={(e) => updateRemark(r.id, e.target.value)}
                                             className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[44px] transition-all"

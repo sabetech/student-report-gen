@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-    Upload, 
-    Search, 
-    ChevronRight, 
-    CheckCircle, 
-    AlertCircle, 
-    Save, 
-    Users, 
-    BookOpen, 
+import {
+    Upload,
+    Search,
+    ChevronRight,
+    CheckCircle,
+    AlertCircle,
+    Save,
+    Users,
+    BookOpen,
     TrendingUp,
     FileSpreadsheet,
     ArrowUpDown
@@ -25,15 +25,15 @@ const UploadData = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
 
-    const selectedConfig = useMemo(() => 
-        configs.find(c => c.id === parseInt(selectedConfigId)), 
-    [configs, selectedConfigId]);
+    const selectedConfig = useMemo(() =>
+        configs.find(c => c.id === parseInt(selectedConfigId)),
+        [configs, selectedConfigId]);
 
     // Fetch initial configs
     useEffect(() => {
         const fetchConfigs = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const res = await fetch(`${apiUrl}/exam-configurations`);
                 const data = await res.json();
                 if (data.status === 'OK') setConfigs(data.configurations);
@@ -56,8 +56,8 @@ const UploadData = () => {
         const fetchConfigDetails = async () => {
             setIsLoading(true);
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
-                
+                const apiUrl = import.meta.env.VITE_API_TARGET;
+
                 // Fetch subjects
                 const subjectsRes = await fetch(`${apiUrl}/exam-config-subjects/${selectedConfigId}`);
                 const subjectsData = await subjectsRes.json();
@@ -97,7 +97,7 @@ const UploadData = () => {
 
         const fetchScores = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
+                const apiUrl = import.meta.env.VITE_API_TARGET;
                 const res = await fetch(`${apiUrl}/student-subject-scores/${selectedConfigId}/${selectedSubjectId}`);
                 const data = await res.json();
                 if (data.status === 'OK') {
@@ -138,7 +138,7 @@ const UploadData = () => {
 
             const gradeObj = scales.find(s => sumRaw >= s.min && sumRaw <= s.max);
             const grade = gradeObj ? gradeObj.label : '-';
-            
+
             const remarkObj = remarks.find(r => r.grade === grade);
             const remark = remarkObj ? remarkObj.text : '-';
 
@@ -190,7 +190,7 @@ const UploadData = () => {
         });
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL;
+            const apiUrl = import.meta.env.VITE_API_TARGET;
             const res = await fetch(`${apiUrl}/student-subject-scores`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -217,7 +217,7 @@ const UploadData = () => {
 
         const weights = selectedConfigData.assessment_weights || [];
         const headers = ['Admission No', 'Student Name', ...weights.map(w => `${w.name} (${w.value}%)`)];
-        
+
         const rows = students.map(student => {
             const studentScores = weights.map(w => localScores[`${student.id}_${w.id}`] || '');
             return [student.admission_no, student.fullname, ...studentScores];
@@ -257,7 +257,7 @@ const UploadData = () => {
                 const columns = rowLine.split(',');
                 const admissionNo = columns[0];
                 const student = students.find(s => s.admission_no === admissionNo);
-                
+
                 if (student) {
                     weights.forEach((w, index) => {
                         const scoreValue = columns[index + 2]; // Offset by 2 (Admission No, Name)
@@ -285,9 +285,9 @@ const UploadData = () => {
                     </h1>
                     <p className="text-slate-400">Record assessment results and generate real-time performance analytics.</p>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-3">
-                    <button 
+                    <button
                         onClick={handleDownloadCSV}
                         disabled={!selectedSubjectId || students.length === 0}
                         className="flex items-center gap-2 px-4 h-11 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 font-bold rounded-xl transition-all border border-slate-700"
@@ -299,16 +299,16 @@ const UploadData = () => {
                     <label className={`flex items-center gap-2 px-4 h-11 bg-slate-800 hover:bg-slate-700 cursor-pointer text-slate-300 font-bold rounded-xl transition-all border border-slate-700 ${(!selectedSubjectId || students.length === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         <Upload className="w-4 h-4" />
                         Upload CSV
-                        <input 
-                            type="file" 
-                            accept=".csv" 
-                            className="hidden" 
+                        <input
+                            type="file"
+                            accept=".csv"
+                            className="hidden"
                             onChange={handleFileUpload}
                             disabled={!selectedSubjectId || students.length === 0}
                         />
                     </label>
 
-                    <button 
+                    <button
                         onClick={handleSave}
                         disabled={isSaving || !selectedSubjectId || students.length === 0 || hasInvalidScores}
                         className="flex items-center gap-2 px-6 h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95"
@@ -338,7 +338,7 @@ const UploadData = () => {
                     >
                         <option value="">Select Configuration</option>
                         {configs.map(c => (
-                            <option key={c.id} value={c.id}>{c.class_name} Configuration</option>
+                            <option key={c.id} value={c.id}>{c.class_name} Configuration (v{c.version})</option>
                         ))}
                     </select>
                 </div>
@@ -376,11 +376,10 @@ const UploadData = () => {
 
             {/* Status Feedback */}
             {status.message && (
-                <div className={`p-4 rounded-xl flex items-center gap-3 border animate-in slide-in-from-top-2 duration-300 ${
-                    status.type === 'success' 
-                        ? 'bg-green-500/10 border-green-500/20 text-green-400' 
-                        : 'bg-red-500/10 border-red-500/20 text-red-400'
-                }`}>
+                <div className={`p-4 rounded-xl flex items-center gap-3 border animate-in slide-in-from-top-2 duration-300 ${status.type === 'success'
+                    ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                    : 'bg-red-500/10 border-red-500/20 text-red-400'
+                    }`}>
                     {status.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
                     <span className="text-sm font-bold">{status.message}</span>
                 </div>
@@ -436,16 +435,15 @@ const UploadData = () => {
                                             return (
                                                 <td key={w.id} className="px-6 py-4 text-center">
                                                     <div className="relative group/input">
-                                                        <input 
+                                                        <input
                                                             type="number"
                                                             value={score ?? ''}
                                                             onChange={(e) => handleScoreChange(student.id, w.id, e.target.value)}
                                                             placeholder="0"
-                                                            className={`w-20 bg-slate-900/50 border rounded-lg px-3 py-2 text-center text-sm font-bold outline-none transition-all placeholder:text-slate-700 ${
-                                                                isInvalid 
-                                                                    ? 'border-red-500 bg-red-500/10 text-red-500 ring-2 ring-red-500/20' 
-                                                                    : 'border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                                                            }`}
+                                                            className={`w-20 bg-slate-900/50 border rounded-lg px-3 py-2 text-center text-sm font-bold outline-none transition-all placeholder:text-slate-700 ${isInvalid
+                                                                ? 'border-red-500 bg-red-500/10 text-red-500 ring-2 ring-red-500/20'
+                                                                : 'border-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                                                }`}
                                                         />
                                                         {isInvalid && (
                                                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none opacity-0 group-hover/input:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -462,13 +460,12 @@ const UploadData = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className={`text-sm font-black w-8 h-8 flex items-center justify-center rounded-lg mx-auto ${
-                                                ['1', '2', '3'].includes(student.grade) 
-                                                    ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
-                                                    : student.grade === '-' 
-                                                        ? 'bg-slate-800 text-slate-600'
-                                                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
-                                            }`}>
+                                            <span className={`text-sm font-black w-8 h-8 flex items-center justify-center rounded-lg mx-auto ${['1', '2', '3'].includes(student.grade)
+                                                ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                                                : student.grade === '-'
+                                                    ? 'bg-slate-800 text-slate-600'
+                                                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                                                }`}>
                                                 {student.grade}
                                             </span>
                                         </td>
@@ -481,7 +478,7 @@ const UploadData = () => {
                                             <div className="flex items-center justify-center gap-1.5">
                                                 <TrendingUp className="w-3 h-3 text-blue-500/50" />
                                                 <span className="text-sm font-bold text-blue-400">
-                                                    {student.rank}<sup>{['st','nd','rd'][student.rank-1] || 'th'}</sup>
+                                                    {student.rank}<sup>{['st', 'nd', 'rd'][student.rank - 1] || 'th'}</sup>
                                                 </span>
                                             </div>
                                         </td>
@@ -497,7 +494,7 @@ const UploadData = () => {
                     </div>
                 )}
             </div>
-            
+
             {/* Legend / Info */}
             <div className="flex flex-col md:flex-row gap-6 mt-4">
                 <div className="flex-1 bg-blue-500/5 rounded-2xl p-6 border border-blue-500/10">
@@ -506,7 +503,7 @@ const UploadData = () => {
                         <h4 className="font-bold text-white">Ranking Algorithm</h4>
                     </div>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                        Students are ranked automatically based on their weighted total score across all assessment components. 
+                        Students are ranked automatically based on their weighted total score across all assessment components.
                         In the event of a tie, students share the same rank.
                     </p>
                 </div>
@@ -516,7 +513,7 @@ const UploadData = () => {
                         <h4 className="font-bold text-white">Grading Logic</h4>
                     </div>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                        Grades are assigned based on the boundaries defined in the selected <b>Exam Configuration</b>. 
+                        Grades are assigned based on the boundaries defined in the selected <b>Exam Configuration</b>.
                         Total score is the sum of raw marks entered for each component.
                     </p>
                 </div>

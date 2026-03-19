@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Edit, FileText, Search, Trash2, Bell, User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { configService } from '../services/configService';
