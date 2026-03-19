@@ -7,6 +7,7 @@ const Sidebar = () => {
         { name: 'Exam Configurations', path: '/exam-configs', icon: LayoutDashboard },
         { name: 'Subject Management', path: '/subjects', icon: BookOpen },
         { name: 'Upload student data', path: '/upload', icon: Upload },
+        { name: 'Generate Student Result', path: '/generate-results', icon: FileText },
         { name: 'Settings', path: '/settings', icon: SettingsIcon },
     ];
 

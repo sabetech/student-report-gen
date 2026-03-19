@@ -7,6 +7,7 @@ import ExamConfigEditor from './pages/ExamConfigEditor';
 import SubjectManagement from './pages/SubjectManagement';
 import UploadData from './pages/UploadData';
 import Settings from './pages/Settings';
+import GenerateResults from './pages/GenerateResults';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/exam-configs/edit/:id" element={<ExamConfigEditor />} />
           <Route path="/subjects" element={<SubjectManagement />} />
           <Route path="/upload" element={<UploadData />} />
+          <Route path="/generate-results" element={<GenerateResults />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/" element={<Navigate to="/exam-configs" replace />} />
         </Route>

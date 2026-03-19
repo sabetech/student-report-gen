@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     Upload,
     Search,
@@ -14,8 +15,9 @@ import {
 } from 'lucide-react';
 
 const UploadData = () => {
+    const location = useLocation();
     const [configs, setConfigs] = useState([]);
-    const [selectedConfigId, setSelectedConfigId] = useState('');
+    const [selectedConfigId, setSelectedConfigId] = useState(location.state?.configId || '');
     const [assignedSubjects, setAssignedSubjects] = useState([]);
     const [selectedSubjectId, setSelectedSubjectId] = useState('');
     const [students, setStudents] = useState([]);
