@@ -23,7 +23,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL;
+            const apiUrl = import.meta.env.VITE_API_TARGET;
             const response = await fetch(`${apiUrl}/login`, {
                 method: 'POST',
                 headers: {
